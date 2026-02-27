@@ -15,9 +15,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Camera, Mail, Calendar, Pencil, X } from "lucide-react";
 
+{
+  /* Profile Overview Card */
+}
 export function ProfileOverview({ user }: { user: any }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
   const [editedUser, setEditedUser] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
@@ -25,10 +27,13 @@ export function ProfileOverview({ user }: { user: any }) {
     profileImage: user.profileImage,
   });
 
-  const handleEditClick = () => setIsEditDialogOpen(true);
+  const handleEditClick = () => {
+    setIsEditDialogOpen(true);
+  };
 
   const handleCloseDialog = () => {
     setIsEditDialogOpen(false);
+    // Reset form to original values when closed without saving
     setEditedUser({
       firstName: user.firstName,
       lastName: user.lastName,
@@ -38,68 +43,64 @@ export function ProfileOverview({ user }: { user: any }) {
   };
 
   const handleSaveChanges = () => {
+    // Here you would typically update the user data
     console.log("Saving changes:", editedUser);
     setIsEditDialogOpen(false);
   };
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    setEditedUser((prev) => ({ ...prev, [name]: value }));
+    setEditedUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
     <>
-      {/* ================= PROFILE CARD ================= */}
-      <Card className="overflow-hidden ">
-        <CardContent className="relative p-4 sm:p-6 md:p-8">
-          <div className="absolute inset-0  pointer-events-none" />
-
-          {/* Responsive layout */}
-          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            
-            {/* LEFT SECTION */}
-            <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center lg:items-end w-full">
-              
-              {/* Avatar */}
-              <div className="relative group shrink-0">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/60 rounded-full blur-lg opacity-20" />
-
-                <Avatar className="relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 border-4 border-white dark:border-gray-800 shadow-xl">
-                  <AvatarImage src={user.profileImage} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-white text-lg font-semibold">
-                    {user.firstName?.[0]}
-                    {user.lastName?.[0]}
+      <div className="overflow-hidden border shadow-sm rounded-xl bg-background">
+        <div className="relative p-4 md:p-6">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between pb-10">
+            {/* Left Section */}
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end ">
+              <div className="relative">
+                <Avatar className="h-20 w-20 border-4 border-background ring-2 ring-primary/20 md:h-24 md:w-24">
+                  <AvatarImage
+                    src={user.profileImage}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="bg-primary/10 text-lg font-semibold text-primary md:text-xl">
+                    {user.firstName[0]}
+                    {user.lastName[0]}
                   </AvatarFallback>
                 </Avatar>
 
                 <Button
                   size="icon"
                   variant="outline"
-                  className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-gray-800 shadow-lg"
+                  className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full bg-background shadow-md transition-all hover:scale-110 hover:shadow-lg md:h-8 md:w-8"
                 >
-                  <Camera className="h-4 w-4 text-primary" />
+                  <Camera className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 </Button>
               </div>
 
-              {/* User Info */}
-              <div className="space-y-2 text-center sm:text-left w-full min-w-0">
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent break-words">
+              <div className="space-y-1.5 text-center sm:text-left">
+                <h2 className="text-xl font-bold tracking-tight md:text-2xl">
                   {user.firstName} {user.lastName}
                 </h2>
 
-                {/* Info Pills */}
-                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                  
-                  <div className="flex items-center justify-center sm:justify-start gap-2 bg-white/60 dark:bg-gray-800/60 px-3 py-1.5 rounded-full shadow-sm max-w-full">
-                    <Mail className="h-4 w-4 text-primary shrink-0" />
-                    <span className="text-xs sm:text-sm truncate">
+                <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:gap-4">
+                  <div className="flex items-center justify-center gap-1.5 sm:justify-start">
+                    <Mail className="h-4 w-4 text-primary/60" />
+                    <span className="text-xs font-medium md:text-sm">
                       {user.email}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-center sm:justify-start gap-2 bg-white/60 dark:bg-gray-800/60 px-3 py-1.5 rounded-full shadow-sm">
-                    <Calendar className="h-4 w-4 text-primary" />
-                    <span className="text-xs sm:text-sm">
+                  <div className="flex items-center justify-center gap-1.5 sm:justify-start">
+                    <Calendar className="h-4 w-4 text-primary/60" />
+                    <span className="text-xs font-medium md:text-sm">
                       Joined {user.joinDate}
                     </span>
                   </div>
@@ -107,131 +108,118 @@ export function ProfileOverview({ user }: { user: any }) {
               </div>
             </div>
 
-            {/* EDIT BUTTON */}
+            {/* Right Section */}
             <Button
               variant="outline"
+              size="sm"
               onClick={handleEditClick}
-              className="
-                w-full lg:w-auto
-                gap-2
-                border-2 border-primary/20
-                bg-white dark:bg-gray-800
-                font-semibold text-primary
-                hover:bg-primary hover:text-white
-                transition-all
-                rounded-xl
-                py-2.5 px-6
-              "
+              className="w-full gap-2 border-primary/20 bg-primary/5 font-medium text-primary transition-all hover:bg-primary/10 hover:text-primary sm:w-auto"
             >
               <Pencil className="h-4 w-4" />
               Edit Profile
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* ================= EDIT DIALOG ================= */}
+      {/* Edit Profile Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent
-          className="
-            w-[95vw]
-            max-w-lg
-            p-0
-            rounded-2xl
-            overflow-hidden
-            max-h-[90vh]
-            flex flex-col
-          "
-        >
-          {/* HEADER */}
-          <div className="bg-gradient-to-r from-primary to-primary/60 px-5 sm:px-6 py-4">
-            <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl font-bold text-white">
-                Edit Profile
-              </DialogTitle>
-              <DialogDescription className="text-white/90 text-xs sm:text-sm">
-                Update your profile information.
-              </DialogDescription>
-            </DialogHeader>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile information here. Click save when
+              you're done.
+            </DialogDescription>
+          </DialogHeader>
 
-            <button
-              onClick={handleCloseDialog}
-              className="absolute right-4 top-4 rounded-full p-1.5 bg-white/20 hover:bg-white/30"
-            >
-              <X className="h-4 w-4 text-white" />
-            </button>
-          </div>
-
-          {/* SCROLLABLE BODY */}
-          <div className="px-5 sm:px-6 py-6 overflow-y-auto space-y-5">
-
-            {/* Avatar Preview */}
+          <div className="grid gap-4 py-4">
+            {/* Profile Image Preview */}
             <div className="flex justify-center">
-              <Avatar className="h-24 w-24 sm:h-28 sm:w-28 border-4 border-white dark:border-gray-800 shadow-xl">
-                <AvatarImage src={editedUser.profileImage} />
-                <AvatarFallback>
-                  {editedUser.firstName?.[0]}
-                  {editedUser.lastName?.[0]}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="h-24 w-24 border-4 border-background ring-2 ring-primary/20">
+                  <AvatarImage
+                    src={editedUser.profileImage || user.profileImage}
+                    alt={`${editedUser.firstName} ${editedUser.lastName}`}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="bg-primary/10 text-xl font-semibold text-primary">
+                    {editedUser.firstName?.[0]}
+                    {editedUser.lastName?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-background shadow-md"
+                >
+                  <Camera className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
-            {/* FORM */}
-            <div className="space-y-4">
+            {/* First Name Input */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="firstName" className="text-right">
+                First Name
+              </Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                value={editedUser.firstName}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label>First Name</Label>
-                <Input
-                  name="firstName"
-                  value={editedUser.firstName}
-                  onChange={handleInputChange}
-                />
-              </div>
+            {/* Last Name Input */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="lastName" className="text-right">
+                Last Name
+              </Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                value={editedUser.lastName}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label>Last Name</Label>
-                <Input
-                  name="lastName"
-                  value={editedUser.lastName}
-                  onChange={handleInputChange}
-                />
-              </div>
+            {/* Email Input */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email" className="text-right">
+                Email
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={editedUser.email}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  name="email"
-                  value={editedUser.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Member Since</Label>
-                <Input disabled value={user.joinDate} />
-              </div>
+            {/* Join Date (Read-only) */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="joinDate" className="text-right">
+                Joined
+              </Label>
+              <Input
+                id="joinDate"
+                value={user.joinDate}
+                disabled
+                className="col-span-3 bg-muted"
+              />
             </div>
           </div>
 
-          {/* FOOTER */}
-          <DialogFooter className="px-5 sm:px-6 py-4 border-t bg-gray-50 dark:bg-gray-800/50">
-            <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <Button
-                variant="outline"
-                onClick={handleCloseDialog}
-                className="w-full"
-              >
-                Cancel
-              </Button>
-
-              <Button
-                onClick={handleSaveChanges}
-                className="w-full bg-gradient-to-r from-primary to-primary/80 text-white"
-              >
-                Save Changes
-              </Button>
-            </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseDialog}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveChanges}>Save changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
