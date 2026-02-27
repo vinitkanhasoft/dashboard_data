@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { TrendingUp } from "lucide-react"
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
@@ -9,6 +10,7 @@ import {
   CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -30,7 +32,7 @@ import {
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
 
-export const description = "An interactive area chart"
+export const description = "An interactive area chart with trend indicators"
 
 const chartData = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -132,17 +134,34 @@ const chartConfig = {
   },
   desktop: {
     label: "Desktop",
-    color: "var(--primary)",
+    color: "hsl(var(--chart-1))",
   },
   mobile: {
     label: "Mobile",
-    color: "var(--primary)",
+    color: "hsl(var(--chart-2))",
+  },
+  total: {
+    label: "Total",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig
+
+// Calculate trend percentage
+const calculateTrend = (data: typeof chartData) => {
+  const lastMonth = data.slice(-30)
+  const previousMonth = data.slice(-60, -30)
+  
+  const lastMonthAvg = lastMonth.reduce((acc, item) => acc + item.desktop + item.mobile, 0) / lastMonth.length
+  const previousMonthAvg = previousMonth.reduce((acc, item) => acc + item.desktop + item.mobile, 0) / previousMonth.length
+  
+  const trend = ((lastMonthAvg - previousMonthAvg) / previousMonthAvg) * 100
+  return trend.toFixed(1)
+}
 
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
+  const [chartType, setChartType] = React.useState<"area" | "bar">("area")
 
   React.useEffect(() => {
     if (isMobile) {
@@ -164,16 +183,45 @@ export function ChartAreaInteractive() {
     return date >= startDate
   })
 
+  // Add total to each data item for bar chart
+  const barChartData = filteredData.map(item => ({
+    ...item,
+    total: item.desktop + item.mobile
+  }))
+
+  const trend = calculateTrend(filteredData)
+  const isTrendingUp = Number(trend) > 0
+
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
-        <CardDescription>
-          <span className="hidden @[540px]/card:block">
-            Total for the last 3 months
-          </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Total Visitors</CardTitle>
+            <CardDescription>
+              <span className="hidden @[540px]/card:block">
+                Total visitors for the last 3 months
+              </span>
+              <span className="@[540px]/card:hidden">Last 3 months</span>
+            </CardDescription>
+          </div>
+          <div className="flex gap-2">
+            <ToggleGroup
+              type="single"
+              value={chartType}
+              onValueChange={(value) => value && setChartType(value as "area" | "bar")}
+              variant="outline"
+              size="sm"
+            >
+              <ToggleGroupItem value="area" aria-label="Switch to area chart">
+                Area
+              </ToggleGroupItem>
+              <ToggleGroupItem value="bar" aria-label="Switch to bar chart">
+                Bar
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+        </div>
         <CardAction>
           <ToggleGroup
             type="single"
@@ -213,79 +261,144 @@ export function ChartAreaInteractive() {
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
         >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value)
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              }}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
-              stackId="a"
-            />
-          </AreaChart>
+          {chartType === "area" ? (
+            <AreaChart data={filteredData}>
+              <defs>
+                <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-desktop)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-desktop)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+                <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-mobile)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-mobile)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={(value) => {
+                  const date = new Date(value)
+                  return date.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                }}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) => {
+                      return new Date(value).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })
+                    }}
+                    indicator="dot"
+                  />
+                }
+              />
+              <Area
+                dataKey="mobile"
+                type="natural"
+                fill="url(#fillMobile)"
+                stroke="var(--color-mobile)"
+                stackId="a"
+              />
+              <Area
+                dataKey="desktop"
+                type="natural"
+                fill="url(#fillDesktop)"
+                stroke="var(--color-desktop)"
+                stackId="a"
+              />
+            </AreaChart>
+          ) : (
+            <BarChart data={barChartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={(value) => {
+                  const date = new Date(value)
+                  return date.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                }}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickCount={5}
+              />
+              <ChartTooltip
+                cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
+                content={
+                  <ChartTooltipContent 
+                    indicator="dot"
+                    formatter={(value, name) => {
+                      const config = name === "desktop" ? chartConfig.desktop : chartConfig.mobile
+                      return (
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full" style={{ backgroundColor: config.color }} />
+                          <span className="font-medium">{config.label}:</span>
+                          <span>{value}</span>
+                        </div>
+                      )
+                    }}
+                  />
+                }
+              />
+              <Bar
+                dataKey="desktop"
+                fill="var(--color-desktop)"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={40}
+              />
+              <Bar
+                dataKey="mobile"
+                fill="var(--color-mobile)"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={40}
+              />
+            </BarChart>
+          )}
         </ChartContainer>
       </CardContent>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="flex gap-2 leading-none font-medium">
+          {isTrendingUp ? "Trending up" : "Trending down"} by {Math.abs(Number(trend))}% this period{" "}
+          <TrendingUp className={`h-4 w-4 ${!isTrendingUp ? "rotate-180" : ""}`} />
+        </div>
+        <div className="text-muted-foreground leading-none">
+          Showing total visitors for the selected time period
+        </div>
+      </CardFooter>
     </Card>
   )
 }
