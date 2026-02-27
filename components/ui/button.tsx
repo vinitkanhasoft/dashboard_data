@@ -40,7 +40,6 @@ const buttonVariants = cva(
 
 function Button({
   className,
-  suppressHydrationWarning ,
   variant = "default",
   size = "default",
   asChild = false,
