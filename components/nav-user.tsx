@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   IconCreditCard,
   IconDotsVertical,
@@ -10,6 +11,9 @@ import {
 
 import { useRouter } from "next/navigation";
 
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { logout, fetchProfile } from "@/lib/redux/authSlice";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
@@ -29,17 +33,27 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated } = useAppSelector((s) => s.auth);
+
+  // Fetch profile from API on mount (only if not already loaded)
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      dispatch(fetchProfile());
+    }
+  }, [dispatch, isAuthenticated, user]);
+
+  const displayName = user
+    ? `${user.firstName} ${user.lastName}`
+    : "User";
+  const displayEmail = user?.email ?? "";
+  const displayAvatar = user?.profileImage ?? "";
+  const initials = user
+    ? `${user.firstName?.charAt(0) ?? ""}${user.lastName?.charAt(0) ?? ""}`
+    : "U";
 
   // ✅ Navigation handlers
   const handleNavigate = (path: string) => {
@@ -47,8 +61,9 @@ export function NavUser({
   };
 
   const handleLogout = () => {
-    // add logout logic here (clear token/session)
-    router.push("/login");
+    dispatch(logout());
+    toast.success("Logged out successfully");
+    router.replace("/login");
   };
 
   return (
@@ -61,16 +76,16 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={displayAvatar} alt={displayName} />
                 <AvatarFallback className="rounded-lg">
-                  {user.name?.charAt(0)}
+                  {initials}
                 </AvatarFallback>
               </Avatar>
 
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{displayName}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  {displayEmail}
                 </span>
               </div>
 
@@ -88,16 +103,16 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={displayAvatar} alt={displayName} />
                   <AvatarFallback className="rounded-lg">
-                    {user.name?.charAt(0)}
+                    {initials}
                   </AvatarFallback>
                 </Avatar>
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{displayName}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
+                    {displayEmail}
                   </span>
                 </div>
               </div>

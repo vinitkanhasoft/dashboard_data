@@ -32,17 +32,12 @@ import {
   IconLayoutColumns,
   IconLoader,
   IconPlus,
-  IconTrendingUp,
   IconSearch,
   IconFilter,
   IconDownload,
   IconUpload,
   IconSettings,
   IconRefresh,
-  IconEye,
-  IconEyeOff,
-  IconLock,
-  IconLockOpen,
   IconAlertCircle,
   IconCheck,
   IconX,
@@ -62,30 +57,12 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -115,8 +92,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
@@ -135,10 +110,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, Pencil, Star, Trash2, FileText, Calendar, Clock, User, Tag, Link2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Copy, Pencil, Star, Trash2, Calendar, Tag } from "lucide-react";
 
 export const schema = z.object({
   id: z.number(),
@@ -240,7 +213,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       );
     },
     cell: ({ row }) => {
-      return <TableCellViewer item={row.original} />;
+      return (
+        <span className="font-medium">{row.original.header}</span>
+      );
     },
     enableHiding: false,
     size: 300,
@@ -688,11 +663,7 @@ export function DataTable({
 
   return (
     <TooltipProvider>
-      <Tabs
-        defaultValue="outline"
-        className="w-full flex-col justify-start gap-6"
-        suppressHydrationWarning
-      >
+      <div className="w-full flex-col justify-start gap-6">
         <div className="flex items-center justify-between px-4 lg:px-6 py-2 border-b">
           <div className="flex items-center gap-2 flex-1">
             <div className="relative flex-1 max-w-md">
@@ -839,11 +810,7 @@ export function DataTable({
           </div>
         </div>
 
-        <TabsContent
-          value="outline"
-          className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
-          suppressHydrationWarning
-        >
+        <div className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6">
           {selectedCount > 0 && (
             <div className="flex items-center justify-between bg-primary/5 rounded-lg p-3 border border-primary/20">
               <div className="flex items-center gap-2">
@@ -873,7 +840,7 @@ export function DataTable({
             </div>
           )}
 
-          <div className="overflow-hidden rounded-xl border bg-card shadow-lg transition-all duration-200 hover:shadow-xl">
+          <div className="overflow-hidden rounded-xl border bg-card shadow-lg transition-all duration-200 hover:shadow-xl mt-5">
             <DndContext
               collisionDetection={closestCenter}
               modifiers={[restrictToVerticalAxis]}
@@ -1027,502 +994,8 @@ export function DataTable({
               </div>
             </div>
           </div>
-        </TabsContent>
-
-        <TabsContent
-          value="past-performance"
-          className="flex flex-col px-4 lg:px-6"
-          suppressHydrationWarning
-        >
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle>Past Performance</CardTitle>
-              <CardDescription>Historical performance metrics and trends</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorDesktop" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-desktop)" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="var(--color-desktop)" stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="colorMobile" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-mobile)" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="var(--color-mobile)" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="month" />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Area type="monotone" dataKey="desktop" stroke="var(--color-desktop)" fillOpacity={1} fill="url(#colorDesktop)" />
-                  <Area type="monotone" dataKey="mobile" stroke="var(--color-mobile)" fillOpacity={1} fill="url(#colorMobile)" />
-                </AreaChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent
-          value="key-personnel"
-          className="flex flex-col px-4 lg:px-6"
-          suppressHydrationWarning
-        >
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle>Key Personnel</CardTitle>
-              <CardDescription>Team members and their roles</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                {["Eddie Lake", "Jamik Tashpulatov", "Emily Whalen"].map((person, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors">
-                    <Avatar className="size-10">
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {person.split(" ").map(n => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-medium">{person}</p>
-                      <p className="text-sm text-muted-foreground">Reviewer</p>
-                    </div>
-                    <Badge variant="outline">Active</Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent
-          value="focus-documents"
-          className="flex flex-col px-4 lg:px-6"
-          suppressHydrationWarning
-        >
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle>Focus Documents</CardTitle>
-              <CardDescription>Important documents and resources</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3">
-                {["Technical Specifications", "Project Timeline", "Budget Overview", "Risk Assessment"].map((doc, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer">
-                    <FileText className="size-5 text-primary" />
-                    <span className="flex-1 font-medium">{doc}</span>
-                    <Badge variant="secondary" className="text-xs">PDF</Badge>
-                    <Button variant="ghost" size="icon" className="size-8">
-                      <Link2 className="size-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsList className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-background border shadow-lg rounded-full h-10 px-1">
-          <TabsTrigger value="outline" className="rounded-full px-4">Outline</TabsTrigger>
-          <TabsTrigger value="past-performance" className="rounded-full px-4">Performance</TabsTrigger>
-          <TabsTrigger value="key-personnel" className="rounded-full px-4">Personnel</TabsTrigger>
-          <TabsTrigger value="focus-documents" className="rounded-full px-4">Documents</TabsTrigger>
-        </TabsList>
-      </Tabs>
-    </TooltipProvider>
-  );
-}
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--primary))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--primary)/0.6)",
-  },
-} satisfies ChartConfig;
-
-function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
-  const isMobile = useIsMobile();
-  const [mounted, setMounted] = React.useState(false);
-  const [isSaving, setIsSaving] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleSave = () => {
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      toast.success("Changes saved successfully");
-    }, 1500);
-  };
-
-  if (!mounted) {
-    return (
-      <Button
-        variant="link"
-        className="text-foreground w-fit px-0 text-left font-medium hover:no-underline"
-      >
-        {item.header}
-      </Button>
-    );
-  }
-
-  return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
-      <DrawerTrigger asChild>
-        <Button
-          variant="link"
-          className="text-foreground hover:text-primary w-fit px-0 text-left font-medium transition-all duration-200 hover:scale-105 hover:no-underline"
-          suppressHydrationWarning
-        >
-          <div className="flex items-center gap-2">
-            <FileText className="size-4 text-primary/70" />
-            {item.header}
-          </div>
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent className="max-w-2xl mx-auto" suppressHydrationWarning>
-        <DrawerHeader className="border-b bg-gradient-to-r from-background to-muted/30">
-          <DrawerTitle className="text-2xl flex items-center gap-2">
-            <FileText className="size-5 text-primary" />
-            {item.header}
-          </DrawerTitle>
-          <DrawerDescription className="flex items-center gap-2 mt-1">
-            <Badge variant="outline" className="bg-primary/5">
-              {item.type}
-            </Badge>
-            <Badge variant="outline" className="bg-primary/5">
-              ID: {item.id}
-            </Badge>
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="flex flex-col gap-6 overflow-y-auto px-6 py-4 text-sm max-h-[70vh]">
-          {!isMobile && (
-            <>
-              <Card className="border-none shadow-none bg-gradient-to-br from-primary/5 to-transparent">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <IconTrendingUp className="size-4 text-green-500" />
-                    Performance Overview
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ChartContainer
-                    config={chartConfig}
-                    className="h-[180px] w-full"
-                  >
-                    <AreaChart
-                      accessibilityLayer
-                      data={chartData}
-                      margin={{
-                        left: 0,
-                        right: 10,
-                      }}
-                    >
-                      <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                      <XAxis
-                        dataKey="month"
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={8}
-                        tickFormatter={(value) => value.slice(0, 3)}
-                      />
-                      <ChartTooltip
-                        cursor={false}
-                        content={<ChartTooltipContent indicator="dot" />}
-                      />
-                      <Area
-                        dataKey="mobile"
-                        type="natural"
-                        fill="var(--color-mobile)"
-                        fillOpacity={0.4}
-                        stroke="var(--color-mobile)"
-                        stackId="a"
-                      />
-                      <Area
-                        dataKey="desktop"
-                        type="natural"
-                        fill="var(--color-desktop)"
-                        fillOpacity={0.6}
-                        stroke="var(--color-desktop)"
-                        stackId="a"
-                      />
-                    </AreaChart>
-                  </ChartContainer>
-                </CardContent>
-                <CardFooter className="pt-0">
-                  <div className="flex items-center gap-2 text-sm">
-                    <IconTrendingUp className="size-4 text-green-500" />
-                    <span className="font-medium">
-                      Trending up by 5.2% this month
-                    </span>
-                  </div>
-                </CardFooter>
-              </Card>
-              <Separator />
-            </>
-          )}
-          
-          <form className="flex flex-col gap-6" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-            <div className="space-y-5">
-              <div>
-                <Label htmlFor={`drawer-header-${item.id}`} className="text-sm font-medium flex items-center gap-1">
-                  <FileText className="size-3.5" />
-                  Header
-                </Label>
-                <Input
-                  id={`drawer-header-${item.id}`}
-                  defaultValue={item.header}
-                  className="mt-1.5 bg-muted/30 border-muted focus:bg-background transition-all"
-                  suppressHydrationWarning
-                />
-              </div>
-
-              <div>
-                <Label htmlFor={`drawer-description-${item.id}`} className="text-sm font-medium flex items-center gap-1">
-                  <FileText className="size-3.5" />
-                  Description
-                </Label>
-                <Textarea
-                  id={`drawer-description-${item.id}`}
-                  defaultValue={item.description || "Add a description..."}
-                  className="mt-1.5 bg-muted/30 border-muted focus:bg-background transition-all min-h-[80px]"
-                  suppressHydrationWarning
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor={`drawer-type-${item.id}`} className="text-sm font-medium flex items-center gap-1">
-                    <Tag className="size-3.5" />
-                    Type
-                  </Label>
-                  <Select defaultValue={item.type}>
-                    <SelectTrigger
-                      id={`drawer-type-${item.id}`}
-                      className="w-full mt-1.5 bg-muted/30 border-muted"
-                      suppressHydrationWarning
-                    >
-                      <SelectValue placeholder="Select a type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Table of Contents">Table of Contents</SelectItem>
-                      <SelectItem value="Executive Summary">Executive Summary</SelectItem>
-                      <SelectItem value="Technical Approach">Technical Approach</SelectItem>
-                      <SelectItem value="Design">Design</SelectItem>
-                      <SelectItem value="Capabilities">Capabilities</SelectItem>
-                      <SelectItem value="Focus Documents">Focus Documents</SelectItem>
-                      <SelectItem value="Narrative">Narrative</SelectItem>
-                      <SelectItem value="Cover Page">Cover Page</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor={`drawer-status-${item.id}`} className="text-sm font-medium flex items-center gap-1">
-                    <IconLoader className="size-3.5" />
-                    Status
-                  </Label>
-                  <Select defaultValue={item.status}>
-                    <SelectTrigger
-                      id={`drawer-status-${item.id}`}
-                      className="w-full mt-1.5 bg-muted/30 border-muted"
-                      suppressHydrationWarning
-                    >
-                      <SelectValue placeholder="Select a status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Done">Done</SelectItem>
-                      <SelectItem value="In Progress">In Progress</SelectItem>
-                      <SelectItem value="Not Started">Not Started</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor={`drawer-priority-${item.id}`} className="text-sm font-medium flex items-center gap-1">
-                    <IconAlertCircle className="size-3.5" />
-                    Priority
-                  </Label>
-                  <Select defaultValue={item.priority || "Medium"}>
-                    <SelectTrigger
-                      id={`drawer-priority-${item.id}`}
-                      className="w-full mt-1.5 bg-muted/30 border-muted"
-                      suppressHydrationWarning
-                    >
-                      <SelectValue placeholder="Select priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="High">High</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="Low">Low</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor={`drawer-duedate-${item.id}`} className="text-sm font-medium flex items-center gap-1">
-                    <Calendar className="size-3.5" />
-                    Due Date
-                  </Label>
-                  <Input
-                    id={`drawer-duedate-${item.id}`}
-                    type="date"
-                    defaultValue={item.dueDate || ""}
-                    className="mt-1.5 bg-muted/30 border-muted focus:bg-background"
-                    suppressHydrationWarning
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor={`drawer-target-${item.id}`} className="text-sm font-medium">
-                    Target
-                  </Label>
-                  <Input
-                    id={`drawer-target-${item.id}`}
-                    defaultValue={item.target}
-                    className="mt-1.5 bg-muted/30 border-muted focus:bg-background"
-                    suppressHydrationWarning
-                  />
-                </div>
-                <div>
-                  <Label htmlFor={`drawer-limit-${item.id}`} className="text-sm font-medium">
-                    Limit
-                  </Label>
-                  <Input
-                    id={`drawer-limit-${item.id}`}
-                    defaultValue={item.limit}
-                    className="mt-1.5 bg-muted/30 border-muted focus:bg-background"
-                    suppressHydrationWarning
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor={`drawer-reviewer-${item.id}`} className="text-sm font-medium flex items-center gap-1">
-                  <User className="size-3.5" />
-                  Reviewer
-                </Label>
-                <Select defaultValue={item.reviewer}>
-                  <SelectTrigger
-                    id={`drawer-reviewer-${item.id}`}
-                    className="w-full mt-1.5 bg-muted/30 border-muted"
-                    suppressHydrationWarning
-                  >
-                    <SelectValue placeholder="Select a reviewer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Eddie Lake">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="size-5">
-                          <AvatarFallback>EL</AvatarFallback>
-                        </Avatar>
-                        <span>Eddie Lake</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="Jamik Tashpulatov">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="size-5">
-                          <AvatarFallback>JT</AvatarFallback>
-                        </Avatar>
-                        <span>Jamik Tashpulatov</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="Emily Whalen">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="size-5">
-                          <AvatarFallback>EW</AvatarFallback>
-                        </Avatar>
-                        <span>Emily Whalen</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium flex items-center gap-1 mb-2">
-                  <Tag className="size-3.5" />
-                  Tags
-                </Label>
-                <div className="flex flex-wrap gap-2">
-                  {["Important", "Review", "Draft"].map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="outline"
-                      className="px-3 py-1 cursor-pointer hover:bg-primary/10 transition-colors"
-                    >
-                      {tag}
-                      <IconX className="ml-1 size-3" />
-                    </Badge>
-                  ))}
-                  <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
-                    + Add tag
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center gap-2">
-                  <Switch id={`drawer-private-${item.id}`} />
-                  <Label htmlFor={`drawer-private-${item.id}`} className="text-sm">
-                    Make private
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Clock className="size-3" />
-                  Last updated: Today
-                </div>
-              </div>
-            </div>
-          </form>
         </div>
-        <DrawerFooter className="border-t bg-muted/20">
-          <div className="flex gap-2 w-full">
-            <Button 
-              className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary"
-              onClick={handleSave}
-              disabled={isSaving}
-              suppressHydrationWarning
-            >
-              {isSaving ? (
-                <>
-                  <IconLoader className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save Changes"
-              )}
-            </Button>
-            <DrawerClose asChild>
-              <Button
-                variant="outline"
-                className="flex-1"
-                suppressHydrationWarning
-              >
-                Cancel
-              </Button>
-            </DrawerClose>
-          </div>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+      </div>
+    </TooltipProvider>
   );
 }

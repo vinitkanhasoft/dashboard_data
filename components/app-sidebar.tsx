@@ -15,6 +15,7 @@ import {
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
+  IconPhoto,
   IconReport,
   IconSearch,
   IconSettings,
@@ -48,6 +49,7 @@ const data = {
     { title: "Analytics", url: "/analytics", icon: IconChartBar },
     { title: "Projects", url: "/projects", icon: IconFolder },
     { title: "Team", url: "/team", icon: IconUsers },
+    { title: "Banner", url: "/banner", icon: IconPhoto },
   ],
   navClouds: [
     {
@@ -152,7 +154,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       {/* Sidebar Footer */}
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

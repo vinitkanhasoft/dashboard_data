@@ -24,12 +24,22 @@ const Toaster = ({ ...props }: ToasterProps) => {
         error: <OctagonXIcon className="size-4" />,
         loading: <Loader2Icon className="size-4 animate-spin" />,
       }}
+      toastOptions={{
+        className: "font-[var(--font-poppins)] bg-white",
+      }}
       style={
         {
-          "--normal-bg": "var(--popover)",
+          "--normal-bg": "#ffffff",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+          "--success-bg": "#f0fdf4",
+          "--success-text": "#15803d",
+          "--success-border": "#86efac",
+          "--error-bg": "#fef2f2",
+          "--error-text": "#b91c1c",
+          "--error-border": "#fca5a5",
+          fontFamily: "var(--font-poppins), Poppins, sans-serif",
         } as React.CSSProperties
       }
       {...props}

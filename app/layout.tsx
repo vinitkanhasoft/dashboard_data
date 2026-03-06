@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { ReduxProvider } from "@/components/providers/redux-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 // ✅ Load Poppins Font
 const poppins = Poppins({
@@ -29,7 +31,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.variable}>
       <body className="antialiased font-sans">
-        {children}
+        <ReduxProvider>{children}</ReduxProvider>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );
