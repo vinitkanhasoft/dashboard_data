@@ -22,7 +22,6 @@ import {
   IconUsers,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -51,53 +50,18 @@ const data = {
     { title: "Team", url: "/team", icon: IconUsers },
     { title: "Banner", url: "/banner", icon: IconPhoto },
   ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "/capture",
-      items: [
-        { title: "Active Proposals", url: "/capture/active" },
-        { title: "Archived", url: "/capture/archived" },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "/proposal",
-      items: [
-        { title: "Active Proposals", url: "/proposal/active" },
-        { title: "Archived", url: "/proposal/archived" },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "/prompts",
-      items: [
-        { title: "Active Proposals", url: "/prompts/active" },
-        { title: "Archived", url: "/prompts/archived" },
-      ],
-    },
-  ],
   navSecondary: [
     { title: "Settings", url: "/settings", icon: IconSettings },
     { title: "Get Help", url: "/help", icon: IconHelp },
     { title: "Search", url: "/search", icon: IconSearch },
   ],
-  documents: [
-    { name: "Data Library", url: "/data-library", icon: IconDatabase },
-    { name: "Reports", url: "/reports", icon: IconReport },
-    { name: "Word Assistant", url: "/word-assistant", icon: IconFileWord },
-  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname() // current route
+  const pathname = usePathname()
 
   const isActive = (url: string) =>
-    pathname === url || pathname.startsWith(url + "/") // for nested routes
+    pathname === url || pathname.startsWith(url + "/")
 
   return (
     <Sidebar collapsible="offcanvas" className="z-50" {...props}>
@@ -107,7 +71,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5 hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              className="data-[slot=sidebar-menu-button]:!p-1.5 hover:bg-gray-200 hover:text-gray-900 cursor-pointer transition-all duration-200"
             >
               <Link href="/" className="flex items-center gap-2">
                 <IconInnerShadowTop className="!size-5" />
@@ -124,19 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain
           items={data.navMain.map((item) => ({
             ...item,
-            className: isActive(item.url)
-              ? "bg-accent text-accent-foreground rounded-md"
-              : "hover:bg-red-100 hover:text-black",
-          }))}
-        />
-
-        {/* Documents */}
-        <NavDocuments
-          items={data.documents.map((item) => ({
-            ...item,
-            className: isActive(item.url)
-              ? "bg-accent text-accent-foreground rounded-md"
-              : "hover:bg-accent/20 hover:text-accent-foreground rounded-md",
+            isActive: isActive(item.url),
           }))}
         />
 
@@ -144,9 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary
           items={data.navSecondary.map((item) => ({
             ...item,
-            className: isActive(item.url)
-              ? "bg-accent text-accent-foreground rounded-md"
-              : "hover:bg-accent/20 hover:text-accent-foreground rounded-md",
+            isActive: isActive(item.url),
           }))}
           className="mt-auto"
         />
@@ -158,4 +108,4 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
     </Sidebar>
   )
-} 
+}

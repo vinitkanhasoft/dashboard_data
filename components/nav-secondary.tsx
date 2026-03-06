@@ -24,7 +24,7 @@ export function NavSecondary({
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild suppressHydrationWarning={true} className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
+            <SidebarMenuButton asChild suppressHydrationWarning={true} className="cursor-pointer">
               <Link href={item.url} className="flex items-center gap-2">
                 <item.icon className="size-4" />
                 <span>{item.title}</span>
